@@ -13,9 +13,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait as Wait
 
-from src.constants import COOLDOWN_TIME, EXCEPTION_TIME, RETRY_TIME, STEP_TIME
-from src.utils import get_driver, load_config, my_condition
+#from src.constants import COOLDOWN_TIME, EXCEPTION_TIME, RETRY_TIME, STEP_TIME
+#from src.utils import get_driver, load_config, my_condition
 
+from constants import COOLDOWN_TIME, EXCEPTION_TIME, RETRY_TIME, STEP_TIME
+from utils import get_driver, load_config, my_condition
+
+
+#config = load_config('src/config.ini')
 config = load_config('src/config.ini')
 USERNAME = config['USVISA']['USERNAME']
 PASSWORD = config['USVISA']['PASSWORD']
@@ -26,14 +31,27 @@ LOCAL_USE = config['CHROMEDRIVER'].getboolean('LOCAL_USE')
 HUB_ADDRESS = config['CHROMEDRIVER']['HUB_ADDRESS']
 FACILITY_ID = sys.argv[1] if len(sys.argv) > 1 else config['USVISA']['FACILITY_ID']
 DATE_URL = f"https://ais.usvisa-info.com/{COUNTRY_CODE}/niv/schedule/{SCHEDULE_ID}/appointment/days/{FACILITY_ID}.json?appointments[expedite]=false"
+#DATE_URL = f"https://ais.usvisa-info.com/{COUNTRY_CODE}/niv/schedule/{SCHEDULE_ID}/appointment/days/{FACILITY_ID}.json?appointments%5Bexpedite%5D=false"
+
+#DATE_URL = f"https://ais.usvisa-info.com/{COUNTRY_CODE}/niv/schedule/{SCHEDULE_ID}/appointment/days/{FACILITY_ID}.json?appointments[expedite]=false"
+
 TIME_URL = f"https://ais.usvisa-info.com/{COUNTRY_CODE}/niv/schedule/{SCHEDULE_ID}/appointment/times/{FACILITY_ID}.json?date=%s&appointments[expedite]=false"
 APPOINTMENT_URL = f"https://ais.usvisa-info.com/{COUNTRY_CODE}/niv/schedule/{SCHEDULE_ID}/appointment"
 GREEN_CIRCLE_EMOJI = emoji.emojize(':green_circle:')
 RED_CIRCLE_EMJOI = emoji.emojize(':red_circle:')
 MAX_DATE_COUNT = 5
 
+#`https://ais.usvisa-info.com/${this.COUNTRY_CODE}/niv/schedule/${this.SCHEDULE_ID}/appointment/days/${this.FACILITY_ID}.json?appointments%5Bexpedite%5D=false`
+
 
 driver = get_driver(local_use=LOCAL_USE, hub_address=HUB_ADDRESS)
+# Set custom headers
+
+driver.request_interceptor = lambda request: request.headers.update({
+    'X-Requested-With': 'XMLHttpRequest',
+    'Accept': 'application/json, text/javascript, */*; q=0.01'
+})
+
 
 def login():
     """
@@ -92,15 +110,41 @@ def get_available_dates():
     """
     Get the date of the next available appointments.
     """
-    driver.get(DATE_URL)
+
+    #time.sleep(random.randint(1, 3))
+    driver.refresh()
+    #time.sleep(random.randint(1, 3))
+
+    # Step 5: Extract the cookies from the Selenium session
+    cookies = driver.get_cookies()
+
+    session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
+
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+        'X-CSRF-Token': 'z1EJj9yjWmtbI6Hwh/KuqAJy6ndl86Nagk9+/3rxKABLnVw0H9XSsfdbizjI6Ye6D84qaRvCIksO0b+gVoRNcw==',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Connection': 'keep-alive',
+        'DNT': '1',
+    }
+
+
+    response = requests.get(DATE_URL, cookies=session_cookies, headers=headers)
+
+    #driver.get(DATE_URL)
     if not is_logged_in():
         login()
         return get_available_dates()
     else:
-        content = driver.find_element(By.TAG_NAME, 'pre').text
-        date = json.loads(content)
+        #content = driver.find_element(By.TAG_NAME, 'pre').text
+        #date = json.loads(content)
+        date = response.json()
         return date
-
 
 def get_valid_date(dates: list) -> Union[str, None]:
     """
@@ -140,9 +184,9 @@ def get_valid_date(dates: list) -> Union[str, None]:
         # TODO: Check if date meets my condition
         # This feature needs improvement, so it's disabled for now
         # and my_condition(month, day) always returns True
-        _, month, day = date.split('-')
-        if not my_condition(month, day):
-            continue
+        # _, month, day = date.split('-')
+        # if not my_condition(month, day):
+        #     continue
 
         return date
 
@@ -155,9 +199,31 @@ def get_time(date):
     :return: Time of the next available appointment.
     """
     time_url = TIME_URL % date
-    driver.get(time_url)
-    content = driver.find_element(By.TAG_NAME, 'pre').text
-    data = json.loads(content)
+
+    cookies = driver.get_cookies()
+    session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
+
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+        'X-CSRF-Token': 'z1EJj9yjWmtbI6Hwh/KuqAJy6ndl86Nagk9+/3rxKABLnVw0H9XSsfdbizjI6Ye6D84qaRvCIksO0b+gVoRNcw==',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Connection': 'keep-alive',
+        'DNT': '1',
+    }
+    response = requests.get(time_url, cookies=session_cookies, headers=headers)
+
+
+
+    #driver.get(time_url)
+    #content = driver.find_element(By.TAG_NAME, 'pre').text
+    #data = json.loads(content)
+    data = response.json()
+
     time = data.get("available_times")[-1]
     logger.info(f"Got time successfully! {date} {time}")
     return time
@@ -173,9 +239,9 @@ def reschedule(date: str) -> bool:
     logger.info(f"Starting Reschedule ({date})")
     time = get_time(date)
     driver.get(APPOINTMENT_URL)
+    #"utf8": driver.find_element(by=By.NAME, value='utf8').get_attribute('value'),
 
     data = {
-        "utf8": driver.find_element(by=By.NAME, value='utf8').get_attribute('value'),
         "authenticity_token": driver.find_element(by=By.NAME, value='authenticity_token').get_attribute('value'),
         "confirmed_limit_message": driver.find_element(
             by=By.NAME, value='confirmed_limit_message'
@@ -195,7 +261,7 @@ def reschedule(date: str) -> bool:
     }
 
     r = requests.post(APPOINTMENT_URL, headers=headers, data=data)
-    if r.text.find('Successfully Scheduled') != -1:
+    if r.status_code == 200:
         logger.info(f"Rescheduled Successfully! {date} {time}")
         return True
 
@@ -205,7 +271,8 @@ def reschedule(date: str) -> bool:
 
 def is_logged_in():
     content = driver.page_source
-    return content.find('error') == -1
+    # previsouly it was content.find('error') == -1
+    return content.find('Y53995837') > -1
 
 
 def search_for_available_date():
@@ -214,6 +281,7 @@ def search_for_available_date():
 
     :return: True if reschedule successfully, otherwise call itself again.
     """
+    
     logger.info("Searching for available date...")
     dates = get_available_dates()[:MAX_DATE_COUNT]
     if not dates:
@@ -238,13 +306,14 @@ def search_for_available_date():
 if __name__ == "__main__":
     login()
     RETRY_COUNT = 0
-    MAX_RETRY = 3
+    MAX_RETRY = 20
 
     while True:
         if RETRY_COUNT > MAX_RETRY:
+            print(RETRY_COUNT)
             break
-
         try:
+            RETRY_COUNT = 0
             if search_for_available_date():
                 break
         except Exception as e:

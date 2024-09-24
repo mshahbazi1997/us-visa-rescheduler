@@ -4,10 +4,10 @@ REGEX_CONTINUE = "//a[contains(text(),'Continuar')]"
 STEP_TIME = 0.5
 
 # Wait time between retries/checks for available dates: 10 minutes
-RETRY_TIME = 10 * 60
+RETRY_TIME = 5 * 60
 
 # Wait time when an exception occurs: 30 minutes
-EXCEPTION_TIME = 30 * 60
+EXCEPTION_TIME = 5 * 60
 
 # Wait time when temporary banned (empty list): 60 minutes
-COOLDOWN_TIME = 60 * 60
+COOLDOWN_TIME = 5 * 60
