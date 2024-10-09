@@ -105,45 +105,47 @@ def login():
     # )
     logger.info("Login successful!")
 
+    # newly added line
+    driver.get(APPOINTMENT_URL)
+    time.sleep(random.randint(10, 15))
+
 
 def get_available_dates():
     """
     Get the date of the next available appointments.
     """
 
-    #time.sleep(random.randint(1, 3))
-    driver.refresh()
-    #time.sleep(random.randint(1, 3))
-
-    # Step 5: Extract the cookies from the Selenium session
-    cookies = driver.get_cookies()
-
-    session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
-
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-        'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
-        'X-CSRF-Token': 'z1EJj9yjWmtbI6Hwh/KuqAJy6ndl86Nagk9+/3rxKABLnVw0H9XSsfdbizjI6Ye6D84qaRvCIksO0b+gVoRNcw==',
-        'Accept': 'application/json, text/javascript, */*; q=0.01',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Connection': 'keep-alive',
-        'DNT': '1',
-    }
-
-
-    response = requests.get(DATE_URL, cookies=session_cookies, headers=headers)
-
     #driver.get(DATE_URL)
     if not is_logged_in():
         login()
         return get_available_dates()
     else:
-        #content = driver.find_element(By.TAG_NAME, 'pre').text
-        #date = json.loads(content)
-        date = response.json()
+        # Step 5: Extract the cookies from the Selenium session
+        cookies = driver.get_cookies()
+
+        session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
+        csrf_token = driver.find_element(By.NAME, 'authenticity_token').get_attribute('value')
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+            'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+            'X-CSRF-Token': csrf_token,
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Connection': 'keep-alive',
+            'DNT': '1',
+        }
+
+        response = requests.get(DATE_URL, cookies=session_cookies, headers=headers)
+            #content = driver.find_element(By.TAG_NAME, 'pre').text
+            #date = json.loads(content)
+        if response.status_code != 200:
+            driver.refresh()
+            time.sleep(60)
+        else:
+            date = response.json()
         return date
 
 def get_valid_date(dates: list) -> Union[str, None]:
@@ -204,10 +206,22 @@ def get_time(date):
     session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
 
     
+    # headers = {
+    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+    #     'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+    #     'X-CSRF-Token': 'z1EJj9yjWmtbI6Hwh/KuqAJy6ndl86Nagk9+/3rxKABLnVw0H9XSsfdbizjI6Ye6D84qaRvCIksO0b+gVoRNcw==',
+    #     'Accept': 'application/json, text/javascript, */*; q=0.01',
+    #     'Accept-Encoding': 'gzip, deflate, br, zstd',
+    #     'Accept-Language': 'en-US,en;q=0.9',
+    #     'X-Requested-With': 'XMLHttpRequest',
+    #     'Connection': 'keep-alive',
+    #     'DNT': '1',
+    # }
+    csrf_token = driver.find_element(By.NAME, 'authenticity_token').get_attribute('value')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
         'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
-        'X-CSRF-Token': 'z1EJj9yjWmtbI6Hwh/KuqAJy6ndl86Nagk9+/3rxKABLnVw0H9XSsfdbizjI6Ye6D84qaRvCIksO0b+gVoRNcw==',
+        'X-CSRF-Token': csrf_token,
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Accept-Encoding': 'gzip, deflate, br, zstd',
         'Accept-Language': 'en-US,en;q=0.9',
@@ -215,6 +229,7 @@ def get_time(date):
         'Connection': 'keep-alive',
         'DNT': '1',
     }
+
     response = requests.get(time_url, cookies=session_cookies, headers=headers)
 
 
@@ -272,7 +287,8 @@ def reschedule(date: str) -> bool:
 def is_logged_in():
     content = driver.page_source
     # previsouly it was content.find('error') == -1
-    return content.find('Y53995837') > -1
+    # content.find('Y53995837') > -1
+    return content.find('Simcoe') > -1
 
 
 def search_for_available_date():
