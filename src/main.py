@@ -13,6 +13,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait as Wait
 
+
+
 #from src.constants import COOLDOWN_TIME, EXCEPTION_TIME, RETRY_TIME, STEP_TIME
 #from src.utils import get_driver, load_config, my_condition
 
@@ -41,6 +43,7 @@ GREEN_CIRCLE_EMOJI = emoji.emojize(':green_circle:')
 RED_CIRCLE_EMJOI = emoji.emojize(':red_circle:')
 MAX_DATE_COUNT = 5
 
+my_url = 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment'
 #`https://ais.usvisa-info.com/${this.COUNTRY_CODE}/niv/schedule/${this.SCHEDULE_ID}/appointment/days/${this.FACILITY_ID}.json?appointments%5Bexpedite%5D=false`
 
 
@@ -103,11 +106,48 @@ def login():
     # Wait(driver, 60).until(
     #     EC.presence_of_element_located((By.XPATH, REGEX_CONTINUE))
     # )
-    logger.info("Login successful!")
-
+    
     # newly added line
-    driver.get(APPOINTMENT_URL)
-    time.sleep(random.randint(10, 15))
+    # time.sleep(10)
+    # driver.get(APPOINTMENT_URL)
+    # time.sleep(10)
+
+    # while driver.current_url != APPOINTMENT_URL:
+    #     print(f"Current URL: {driver.current_url} does not match {APPOINTMENT_URL}, retrying...")
+            
+    #     # Wait for 10 seconds between retries
+    #     time.sleep(10)
+        
+    #     # Attempt to navigate to the appointment page
+    #     driver.get(APPOINTMENT_URL)
+
+    #     # Once the loop exits, the URL should match
+    #     print(f"Successfully navigated to {APPOINTMENT_URL}")
+
+    first_element = Wait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, '//*[@id="main"]/div[2]/div[3]/div[1]/div/div/div[1]/div[2]/ul/li/a'))
+    )
+    first_element.click()
+    time.sleep(4)
+
+    #driver.get(my_url)
+    #time.sleep(STEP_TIME)
+
+    second_element = Wait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, '//*[@id="forms"]/ul/li[4]'))
+    )
+    second_element.click()
+    time.sleep(4)
+
+    third_element = Wait(driver, 60).until(
+        EC.element_to_be_clickable((By.XPATH,  "//a[text()='Reschedule Appointment']"))
+    )
+    third_element.click()
+    time.sleep(4)
+    # reschedule_link = driver.find_element(By.XPATH, "//a[text()='Reschedule Appointment']")
+    # reschedule_link.click()
+
+    logger.info("Login successful!")
 
 
 def get_available_dates():
@@ -120,6 +160,8 @@ def get_available_dates():
         login()
         return get_available_dates()
     else:
+        # driver.get(APPOINTMENT_URL)
+        # time.sleep(5)
         # Step 5: Extract the cookies from the Selenium session
         cookies = driver.get_cookies()
 
