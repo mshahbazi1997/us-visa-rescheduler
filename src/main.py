@@ -166,21 +166,48 @@ def get_available_dates():
         cookies = driver.get_cookies()
 
         session_cookies = {cookie['name']: cookie['value'] for cookie in cookies}
+
+        selenium_cookies = driver.get_cookies()
+        session_cookies = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
+
+
+
         csrf_token = driver.find_element(By.NAME, 'authenticity_token').get_attribute('value')
         
+        # headers = {
+        #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+        #     'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+        #     'X-CSRF-Token': csrf_token,
+        #     'Accept': 'application/json, text/javascript, */*; q=0.01',
+        #     'Accept-Encoding': 'gzip, deflate, br, zstd',
+        #     'Accept-Language': 'en-US,en;q=0.9',
+        #     'X-Requested-With': 'XMLHttpRequest',
+        #     'Connection': 'keep-alive',
+        #     'DNT': '1',
+        # }
+
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-            'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
-            'X-CSRF-Token': csrf_token,
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'Accept-Encoding': 'gzip, deflate, br, zstd',
             'Accept-Language': 'en-US,en;q=0.9',
-            'X-Requested-With': 'XMLHttpRequest',
             'Connection': 'keep-alive',
-            'DNT': '1',
+            'Host': 'ais.usvisa-info.com',
+            'If-None-Match': 'W/"ae0b112058280a56bc2993741fe01468"',  # ETag
+            'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+            'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+            'X-CSRF-Token': 'aQd56mykJizw5yzvKKr50pGyVrql3mDsLUZbJJGGGvPKWlxnVwX6MkuaGGXxlntRpKWZMPfGbY0HianVa8ua2A==',
+            'X-Requested-With': 'XMLHttpRequest',
         }
+        
 
-        response = requests.get(DATE_URL, cookies=session_cookies, headers=headers)
+
+        response = requests.get(DATE_URL, cookies=session_cookies, headers=headers,timeout=10)
             #content = driver.find_element(By.TAG_NAME, 'pre').text
             #date = json.loads(content)
         if response.status_code != 200:
