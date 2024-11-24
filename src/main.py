@@ -186,24 +186,44 @@ def get_available_dates():
         #     'DNT': '1',
         # }
 
+        # headers = {
+        #     'Accept': 'application/json, text/javascript, */*; q=0.01',
+        #     'Accept-Encoding': 'gzip, deflate, br, zstd',
+        #     'Accept-Language': 'en-US,en;q=0.9',
+        #     'Connection': 'keep-alive',
+        #     'Host': 'ais.usvisa-info.com',
+        #     'If-None-Match': 'W/"ae0b112058280a56bc2993741fe01468"',  # ETag
+        #     'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+        #     'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+        #     'sec-ch-ua-mobile': '?0',
+        #     'sec-ch-ua-platform': '"macOS"',
+        #     'Sec-Fetch-Dest': 'empty',
+        #     'Sec-Fetch-Mode': 'cors',
+        #     'Sec-Fetch-Site': 'same-origin',
+        #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+        #     'X-CSRF-Token': 'aQd56mykJizw5yzvKKr50pGyVrql3mDsLUZbJJGGGvPKWlxnVwX6MkuaGGXxlntRpKWZMPfGbY0HianVa8ua2A==',
+        #     'X-Requested-With': 'XMLHttpRequest',
+        # }
+
         headers = {
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'Accept-Encoding': 'gzip, deflate, br, zstd',
             'Accept-Language': 'en-US,en;q=0.9',
             'Connection': 'keep-alive',
             'Host': 'ais.usvisa-info.com',
-            'If-None-Match': 'W/"ae0b112058280a56bc2993741fe01468"',  # ETag
+            'If-None-Match': 'W/"1a5d7dacc35f621819922f595e3efaec"',  # Updated ETag
             'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
-            'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+            'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"macOS"',
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'same-origin',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-            'X-CSRF-Token': 'aQd56mykJizw5yzvKKr50pGyVrql3mDsLUZbJJGGGvPKWlxnVwX6MkuaGGXxlntRpKWZMPfGbY0HianVa8ua2A==',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+            'X-CSRF-Token': 'UbKRU5F3gdDUuc/QDUdo2uezt2BBlVhm2wCB2ScpmJna9lBJ9wFvTQbbiBpMHwKobDX5kkEfkW26Az2X7bHyjQ==',  # Updated CSRF token
             'X-Requested-With': 'XMLHttpRequest',
         }
+
         
 
 
@@ -287,17 +307,55 @@ def get_time(date):
     #     'DNT': '1',
     # }
     csrf_token = driver.find_element(By.NAME, 'authenticity_token').get_attribute('value')
+    # headers = {
+    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+    #     'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+    #     'X-CSRF-Token': csrf_token,
+    #     'Accept': 'application/json, text/javascript, */*; q=0.01',
+    #     'Accept-Encoding': 'gzip, deflate, br, zstd',
+    #     'Accept-Language': 'en-US,en;q=0.9',
+    #     'X-Requested-With': 'XMLHttpRequest',
+    #     'Connection': 'keep-alive',
+    #     'DNT': '1',
+    # }
+    # headers = {
+    #         'Accept': 'application/json, text/javascript, */*; q=0.01',
+    #         'Accept-Encoding': 'gzip, deflate, br, zstd',
+    #         'Accept-Language': 'en-US,en;q=0.9',
+    #         'Connection': 'keep-alive',
+    #         'Host': 'ais.usvisa-info.com',
+    #         'If-None-Match': 'W/"ae0b112058280a56bc2993741fe01468"',  # ETag
+    #         'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+    #         'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
+    #         'sec-ch-ua-mobile': '?0',
+    #         'sec-ch-ua-platform': '"macOS"',
+    #         'Sec-Fetch-Dest': 'empty',
+    #         'Sec-Fetch-Mode': 'cors',
+    #         'Sec-Fetch-Site': 'same-origin',
+    #         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+    #         'X-CSRF-Token': 'aQd56mykJizw5yzvKKr50pGyVrql3mDsLUZbJJGGGvPKWlxnVwX6MkuaGGXxlntRpKWZMPfGbY0HianVa8ua2A==',
+    #         'X-Requested-With': 'XMLHttpRequest',
+    #     }
+
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-        'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
-        'X-CSRF-Token': csrf_token,
-        'Accept': 'application/json, text/javascript, */*; q=0.01',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Connection': 'keep-alive',
-        'DNT': '1',
-    }
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Connection': 'keep-alive',
+            'Host': 'ais.usvisa-info.com',
+            'If-None-Match': 'W/"1a5d7dacc35f621819922f595e3efaec"',  # Updated ETag
+            'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/60955937/appointment',
+            'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+            'X-CSRF-Token': 'UbKRU5F3gdDUuc/QDUdo2uezt2BBlVhm2wCB2ScpmJna9lBJ9wFvTQbbiBpMHwKobDX5kkEfkW26Az2X7bHyjQ==',  # Updated CSRF token
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    
 
     response = requests.get(time_url, cookies=session_cookies, headers=headers)
 
